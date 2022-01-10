@@ -1,0 +1,562 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r Importing libraries}
+library(dplyr)
+library(tidyr)
+library(zoo)
+library(crqa)
+library(nonlinearTseries)
+library(TSA)
+library(Kendall)
+library(ggplot2)
+set.seed(42)
+``` 
+
+```{r Load Datasets}
+headers = c("Index", "LS_diff", "RS_diff")
+left_df_1 <- read.csv(".\\OpenPose\\1\\left_dataframe.csv")
+left_df_1 <- left_df_1[, c("X", "LS_diff", "RS_diff")]
+left_df_1 <- left_df_1[-1,]
+
+left_df_2 <- read.csv(".\\OpenPose\\2\\left_dataframe.csv")
+left_df_2 <- left_df_2[, c("X", "LS_diff", "RS_diff")]
+left_df_2 <- left_df_2[-1,]
+
+left_df_3 <- read.csv(".\\OpenPose\\3\\left_dataframe.csv")
+left_df_3 <- left_df_3[, c("X", "LS_diff", "RS_diff")]
+left_df_3 <- left_df_3[-1,]
+
+left_df_4 <- read.csv(".\\OpenPose\\4\\left_dataframe.csv")
+left_df_4 <- left_df_4[, c("X", "LS_diff", "RS_diff")]
+left_df_4 <- left_df_4[-1,]
+
+left_df_5 <- read.csv(".\\OpenPose\\5\\left_dataframe.csv")
+left_df_5 <- left_df_5[, c("X", "LS_diff", "RS_diff")]
+left_df_5 <- left_df_5[-1,]
+
+right_df_1 <- read.csv(".\\OpenPose\\1\\right_dataframe.csv")
+right_df_1 <- right_df_1[, c("X", "LS_diff", "RS_diff")]
+right_df_1 <- right_df_1[-1,]
+
+right_df_2 <- read.csv(".\\OpenPose\\2\\right_dataframe.csv")
+right_df_2 <- right_df_2[, c("X", "LS_diff", "RS_diff")]
+right_df_2 <- right_df_2[-1,]
+
+right_df_3 <- read.csv(".\\OpenPose\\3\\right_dataframe.csv")
+right_df_3 <- right_df_3[, c("X", "LS_diff", "RS_diff")]
+right_df_3 <- right_df_3[-1,]
+
+right_df_4 <- read.csv(".\\OpenPose\\4\\right_dataframe.csv")
+right_df_4 <- right_df_4[, c("X", "LS_diff", "RS_diff")]
+right_df_4 <- right_df_4[-1,]
+
+right_df_5 <- read.csv(".\\OpenPose\\5\\right_dataframe.csv")
+right_df_5 <- right_df_5[, c("X", "LS_diff", "RS_diff")]
+right_df_5 <- right_df_5[-1,]
+```
+
+```{r Load Sample Datasets}
+headers = c("Index", "LS_diff", "RS_diff")
+left_df_S1 <- read.csv(".\\OpenPose\\S1\\left_dataframe.csv")
+left_df_S1 <- left_df_S1[, c("X", "LS_diff", "RS_diff")]
+left_df_S1 <- left_df_S1[-1,]
+
+left_df_S2 <- read.csv(".\\OpenPose\\S2\\left_dataframe.csv")
+left_df_S2 <- left_df_S2[, c("X", "LS_diff", "RS_diff")]
+left_df_S2 <- left_df_S2[-1,]
+
+left_df_S3 <- read.csv(".\\OpenPose\\S3\\left_dataframe.csv")
+left_df_S3 <- left_df_S3[, c("X", "LS_diff", "RS_diff")]
+left_df_S3 <- left_df_S3[-1,]
+
+left_df_S4 <- read.csv(".\\OpenPose\\S4\\left_dataframe.csv")
+left_df_S4 <- left_df_S4[, c("X", "LS_diff", "RS_diff")]
+left_df_S4 <- left_df_S4[-1,]
+
+left_df_S5 <- read.csv(".\\OpenPose\\S5\\left_dataframe.csv")
+left_df_S5 <- left_df_S5[, c("X", "LS_diff", "RS_diff")]
+left_df_S5 <- left_df_S5[-1,]
+
+left_df_S6 <- read.csv(".\\OpenPose\\S6\\left_dataframe.csv")
+left_df_S6 <- left_df_S6[, c("X", "LS_diff", "RS_diff")]
+left_df_S6 <- left_df_S6[-1,]
+
+left_df_S7 <- read.csv(".\\OpenPose\\S7\\left_dataframe.csv")
+left_df_S7 <- left_df_S7[, c("X", "LS_diff", "RS_diff")]
+left_df_S7 <- left_df_S7[-1,]
+
+left_df_S8 <- read.csv(".\\OpenPose\\S8\\left_dataframe.csv")
+left_df_S8 <- left_df_S8[, c("X", "LS_diff", "RS_diff")]
+left_df_S8 <- left_df_S8[-1,]
+
+right_df_S1 <- read.csv(".\\OpenPose\\S1\\right_dataframe.csv")
+right_df_S1 <- right_df_S1[, c("X", "LS_diff", "RS_diff")]
+right_df_S1 <- right_df_S1[-1,]
+
+right_df_S2 <- read.csv(".\\OpenPose\\S2\\right_dataframe.csv")
+right_df_S2 <- right_df_S2[, c("X", "LS_diff", "RS_diff")]
+right_df_S2 <- right_df_S2[-1,]
+
+right_df_S3 <- read.csv(".\\OpenPose\\S3\\right_dataframe.csv")
+right_df_S3 <- right_df_S3[, c("X", "LS_diff", "RS_diff")]
+right_df_S3 <- right_df_S3[-1,]
+
+right_df_S4 <- read.csv(".\\OpenPose\\S4\\right_dataframe.csv")
+right_df_S4 <- right_df_S4[, c("X", "LS_diff", "RS_diff")]
+right_df_S4 <- right_df_S4[-1,]
+
+right_df_S5 <- read.csv(".\\OpenPose\\S5\\right_dataframe.csv")
+right_df_S5 <- right_df_S5[, c("X", "LS_diff", "RS_diff")]
+right_df_S5 <- right_df_S5[-1,]
+
+right_df_S6 <- read.csv(".\\OpenPose\\S6\\right_dataframe.csv")
+right_df_S6 <- right_df_S6[, c("X", "LS_diff", "RS_diff")]
+right_df_S6 <- right_df_S6[-1,]
+
+right_df_S7 <- read.csv(".\\OpenPose\\S7\\right_dataframe.csv")
+right_df_S7 <- right_df_S7[, c("X", "LS_diff", "RS_diff")]
+right_df_S7 <- right_df_S7[-1,]
+
+right_df_S8 <- read.csv(".\\OpenPose\\S8\\right_dataframe.csv")
+right_df_S8 <- right_df_S8[, c("X", "LS_diff", "RS_diff")]
+right_df_S8 <- right_df_S8[-1,]
+```
+```{r Excitement Score Fragments}
+left_df_1$ES <- 3 
+left_df_1$ES <- 3 
+left_df_2$ES <- 2 
+left_df_2$ES <- 2
+left_df_3$ES <- 4 
+left_df_3$ES <- 4
+left_df_4$ES <- 3
+left_df_4$ES <- 3
+left_df_5$ES <- 4
+left_df_5$ES <- 4
+
+```
+```{r Excitement Score Samples}
+left_df_S1$ES <- 1 
+left_df_S1$ES <- 1 
+left_df_S2$ES <- 2 
+left_df_S2$ES <- 2
+left_df_S3$ES <- 2 
+left_df_S3$ES <- 2
+left_df_S4$ES <- 3
+left_df_S4$ES <- 3
+left_df_S5$ES <- 3
+left_df_S5$ES <- 3
+left_df_S6$ES <- 3
+left_df_S6$ES <- 3
+left_df_S7$ES <- 4
+left_df_S8$ES <- 4
+left_df_S8$ES <- 4
+left_df_S8$ES <- 4
+```
+```{r}
+ccf_line <- function(ccf_obj)
+  {
+  max_acf <- max(abs(ccf_obj$acf))
+  max_index <- match(max_acf, abs(ccf_obj$acf))
+  return(ccf_obj$lag[max_index])
+  }
+```
+For the shoulder adjustments, we want a time series variable that is the per person per shoulder change in y
+
+
+Cross recurrence analysis
+Autocorrelation Functions
+```{r ACF Original}
+par(mar=c(3,3,3,0))
+acf1 <- ccf(left_df_1$LS_diff, left_df_1$LS_diff, lag = 64)
+acf2 <- ccf(left_df_2$LS_diff, left_df_2$LS_diff, lag = 64)
+acf3 <- ccf(left_df_3$LS_diff, left_df_3$LS_diff, lag = 64)
+acf4 <- ccf(left_df_4$LS_diff, left_df_4$LS_diff, lag = 64)
+acf5 <- ccf(left_df_5$LS_diff, left_df_5$LS_diff, lag = 64)
+```
+```{r ACF Samples}
+par(mar=c(3,3,3,0))
+acfS1 <- ccf(left_df_S1$LS_diff, left_df_S1$LS_diff, lag = 60)
+acfS2 <- ccf(left_df_S2$LS_diff, left_df_S2$LS_diff, lag = 60)
+acfS3 <- ccf(left_df_S3$LS_diff, left_df_S3$LS_diff, lag = 60)
+acfS4 <- ccf(left_df_S4$LS_diff, left_df_S4$LS_diff, lag = 60)
+acfS5 <- ccf(left_df_S5$LS_diff, left_df_S5$LS_diff, lag = 60)
+acfS6 <- ccf(left_df_S6$LS_diff, left_df_S6$LS_diff, lag = 60)
+acfS7 <- ccf(left_df_S7$LS_diff, left_df_S7$LS_diff, lag = 60)
+acfS8 <- ccf(left_df_S8$LS_diff, left_df_S8$LS_diff, lag = 60)
+```
+
+```{r Mann Kendall Tests}
+MannKendall(left_df_1$LS_diff)
+MannKendall(right_df_1$LS_diff)
+MannKendall(left_df_2$LS_diff)
+MannKendall(right_df_2$LS_diff)
+MannKendall(left_df_3$LS_diff)
+MannKendall(right_df_3$LS_diff)
+MannKendall(left_df_4$LS_diff)
+MannKendall(right_df_4$LS_diff)
+MannKendall(left_df_5$LS_diff)
+MannKendall(right_df_5$LS_diff)
+
+MannKendall(left_df_S1$LS_diff)
+MannKendall(right_df_S1$LS_diff)
+MannKendall(left_df_S2$LS_diff)
+MannKendall(right_df_S2$LS_diff)
+MannKendall(left_df_S3$LS_diff)
+MannKendall(right_df_S3$LS_diff)
+MannKendall(left_df_S4$LS_diff)
+MannKendall(right_df_S4$LS_diff)
+MannKendall(left_df_S5$LS_diff)
+MannKendall(right_df_S5$LS_diff)
+MannKendall(left_df_S6$LS_diff)
+MannKendall(right_df_S6$LS_diff)
+MannKendall(left_df_S7$LS_diff)
+MannKendall(right_df_S7$LS_diff)
+MannKendall(left_df_S8$LS_diff)
+MannKendall(right_df_S8$LS_diff)
+```
+Sample 3 left and right are trending, showing
+None of the random samples show trend
+Trend in both 3s, 
+```{r}
+rows <- sample(nrow(left_df_1))
+left_df_shuffle = left_df_1[rows,]
+```
+```{r Prewhitening}
+prewhiten(left_df_1$LS_diff, left_df_1$LS_diff)
+```
+
+```{r}
+par(mar=c(3,3,3,0))
+ccfshuffle <- ccf(left_df_shuffle$LS_diff, left_df_shuffle$LS_diff, lag = 64)
+
+```
+```{r CCF Fragments}
+par(mar=c(3,3,3,0))
+ccf1 <- ccf(left_df_1$LS_diff, right_df_1$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+abline(v = ccf_line(ccf1), col = "red", lty = 2)
+ccf2 <- ccf(left_df_2$LS_diff, right_df_2$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+abline(v = ccf_line(ccf2), col = "red", lty = 2)
+ccf3 <- ccf(left_df_3$LS_diff, right_df_3$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+abline(v = ccf_line(ccf3), col = "red", lty = 2)
+ccf4 <- ccf(left_df_4$LS_diff, right_df_4$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+abline(v = ccf_line(ccf4), col = "red", lty = 2)
+ccf5 <- ccf(left_df_5$LS_diff, right_df_5$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+abline(v = ccf_line(ccf5), col = "red", lty = 2)
+```
+```{r CCF Samples}
+ccfS1<- ccf(left_df_S1$LS_diff, right_df_S1$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS2<- ccf(left_df_S2$LS_diff, right_df_S2$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS3<- ccf(left_df_S3$LS_diff, right_df_S3$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS4<- ccf(left_df_S4$LS_diff, right_df_S4$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS5<- ccf(left_df_S5$LS_diff, right_df_S5$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS6<- ccf(left_df_S6$LS_diff, right_df_S6$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS7<- ccf(left_df_S7$LS_diff, right_df_S7$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+ccfS8<- ccf(left_df_S8$LS_diff, right_df_S8$LS_diff, lag = 60, ylim = c(-0.5, 0.5))
+
+```
+```{r Plotting master graph cross correlation}
+main_df <- data.frame(ccf1$acf)
+main_df$two <- data.frame(ccf2$acf)
+main_df$three <- data.frame(ccf3$acf)
+main_df$four <- data.frame(ccf4$acf)
+main_df$five <- data.frame(ccf5$acf)
+main_df$mean <- data.frame(Means=rowMeans(main_df[,-1]))
+main_df$sd <- apply(main_df[ ,1:5],1,sd)
+
+Lag = ccf1$lag
+
+ggplot(main_df, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+```
+```{r Plotting sample master graph cross correlation}
+samplemain_df <- data.frame(ccfS1$acf)
+samplemain_df$two <- data.frame(ccfS2$acf)
+samplemain_df$three <- data.frame(ccfS3$acf)
+samplemain_df$four <- data.frame(ccfS4$acf)
+samplemain_df$five <- data.frame(ccfS5$acf)
+samplemain_df$six <- data.frame(ccfS6$acf)
+samplemain_df$seven <- data.frame(ccfS7$acf)
+samplemain_df$eight <- data.frame(ccfS8$acf)
+
+samplemain_df$mean <- data.frame(Means=rowMeans(samplemain_df[,-1]))
+samplemain_df$sd <- apply(samplemain_df[ ,1:8],1,sd)
+
+Lag = ccfS1$lag
+
+ggplot(samplemain_df, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+```
+
+```{r Graph per score}
+Lag = ccfS1$lag
+main_df1 <- data.frame(ccfS1$acf)
+ggplot(main_df1, aes(x = Lag, y = ccfS1.acf)) +
+       geom_line() +
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+
+main_df2  <- data.frame(ccfS2$acf)
+main_df2$three <- data.frame(ccfS3$acf)
+main_df2$two <- data.frame(ccf2$acf)
+main_df2$mean <- data.frame(Means=rowMeans(main_df2[,-1]))
+main_df2$sd <- apply(main_df2[ ,1:3],1,sd)
+
+ggplot(main_df2, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+main_df3  <- data.frame(ccfS4$acf)
+main_df3$s5 <- data.frame(ccfS5$acf)
+main_df3$one <- data.frame(ccf1$acf)
+main_df3$four <- data.frame(ccf4$acf)
+main_df3$mean <- data.frame(Means=rowMeans(main_df3[,-1]))
+main_df3$sd <- apply(main_df3[ ,1:4],1,sd)
+ggplot(main_df3, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+main_df4 <- data.frame(ccfS6$acf)
+main_df4$s7 <- data.frame(ccfS7$acf)
+main_df4$three <- data.frame(ccf3$acf)
+main_df4$five <- data.frame(ccf5$acf)
+main_df4$mean <- data.frame(Means=rowMeans(main_df4[,-1]))
+main_df4$sd <- apply(main_df4[ ,1:4],1,sd)
+ggplot(main_df4, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+main_df5 <- data.frame(ccfS8$acf)
+ggplot(main_df1, aes(x = Lag, y = ccfS8$acf)) +
+       geom_line() +
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+```
+```{r Shuffle per score}
+rows <- sample(nrow(main_df2))
+main_df2 <- main_df2[rows,]
+ggplot(main_df2, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+rows <- sample(nrow(main_df3))
+main_df3 <- main_df3[rows,]
+ggplot(main_df3, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+
+rows <- sample(nrow(main_df4))
+main_df4 <- main_df4[rows,]
+ggplot(main_df4, aes(x = Lag, y = mean$Means)) +
+       geom_line() +
+       geom_ribbon(aes(ymin = mean$Means - sd,
+                       ymax = mean$Means + sd), alpha = 0.1) + 
+        xlab("Lag") + 
+        ylab("Mean Correlation Coefficient")+
+        theme_light()
+```
+
+
+Cross Recurrence Analysis
+Average Mutual Information
+
+Recurrence Plot/Diagonal Recurrence Plotk
+All Mutual Average Information functions have a local minimum at 1
+```{r}
+mutualInformation(left_df_1$LS_diff)
+mutualInformation(right_df_1$LS_diff)
+```
+```{r}
+mutualInformation(left_df_2$LS_diff)
+mutualInformation(right_df_2$LS_diff)
+```
+```{r}
+mutualInformation(left_df_3$LS_diff)
+mutualInformation(right_df_3$LS_diff)
+```
+```{r}
+mutualInformation(left_df_4$LS_diff)
+mutualInformation(right_df_4$LS_diff)
+```
+```{r}
+mutualInformation(left_df_4$LS_diff)
+mutualInformation(right_df_4$LS_diff)
+```
+```{r}
+mutualInformation(left_df_S5$LS_diff)
+mutualInformation(right_df_S5$LS_diff)
+mutualInformation(left_df_S6$LS_diff)
+mutualInformation(right_df_S6$LS_diff)
+mutualInformation(left_df_S7$LS_diff)
+mutualInformation(right_df_S7$LS_diff)
+mutualInformation(left_df_S8$LS_diff)
+mutualInformation(right_df_S8$LS_diff)
+```
+
+```{r}
+crqa_results_1 <- crqa(ts1 = left_df_1$LS_diff, ts2 = right_df_1$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_1$RP
+par = list(unit = 20, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 0.25, pch = 0,labax = seq(0,190, 20), labay = seq(0,190,20),
+las = 1)
+plotRP(RP, par) 
+print(crqa_results_1$RR)
+print(crqa_results_1$DET)
+print(crqa_results_1$L)
+print(crqa_results_1$maxL)
+```
+```{r}
+crqa_results_2 <- crqa(ts1 = left_df_2$LS_diff, ts2 = right_df_2$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_2$RP
+par = list(unit = 20, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 0.25, pch = 0,labax = seq(0,190, 20), labay = seq(0,190,20),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_3 <- crqa(ts1 = left_df_3$LS_diff, ts2 = right_df_3$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_3$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,70, 5), labay = seq(0,70,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_4 <- crqa(ts1 = left_df_4$LS_diff, ts2 = right_df_4$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_4$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_5 <- crqa(ts1 = left_df_5$LS_diff, ts2 = right_df_5$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_5$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+
+crqa_results_shuffle <- crqa(ts1 = left_df_1shuffle$LS_diff, ts2 = right_df_1shuffle$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 1, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_1$RP
+par = list(unit = 20, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 0.25, pch = 0,labax = seq(0,190, 20), labay = seq(0,190,20),
+las = 1)
+plotRP(RP, par) 
+print(crqa_results_1$RR)
+print(crqa_results_1$DET)
+print(crqa_results_1$L)
+print(crqa_results_1$maxL)
+```
+```{r}
+crqa_results_S1 <- crqa(ts1 = left_df_S1$LS_diff, ts2 = right_df_S1$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S1$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_S2 <- crqa(ts1 = left_df_S2$LS_diff, ts2 = right_df_S2$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S2$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_S3 <- crqa(ts1 = left_df_S3$LS_diff, ts2 = right_df_S3$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S3$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+plotRP(RP, par) 
+```
+```{r}
+crqa_results_S4 <- crqa(ts1 = left_df_S4$LS_diff, ts2 = right_df_S4$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S4$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+#plotRP(RP, par) 
+```
+```{r}
+crqa_results_S5 <- crqa(ts1 = left_df_S5$LS_diff, ts2 = right_df_S5$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S5$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+#plotRP(RP, par) 
+```
+```{r}
+crqa_results_S6 <- crqa(ts1 = left_df_S6$LS_diff, ts2 = right_df_S6$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S6$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+#plotRP(RP, par) 
+```
+```{r}
+crqa_results_S7 <- crqa(ts1 = left_df_S7$LS_diff, ts2 = right_df_S7$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S7$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+#plotRP(RP, par) 
+```
+```{r}
+crqa_results_S8 <- crqa(ts1 = left_df_S8$LS_diff, ts2 = right_df_S8$LS_diff, delay = 1, embed = 2, rescale = 0, radius = 0.15, normalize = 2, mindiagline = 2, minvertline = 2, tw = 0, whiteline = FALSE, recpt = FALSE, side = "both")
+RP = crqa_results_S8$RP
+par = list(unit = 5, labelx = "Time", labely = "Time",
+cols = "dodgerblue", pcex = 1, pch = 0,labax = seq(0,60, 5), labay = seq(0,60,5),
+las = 1)
+#plotRP(RP, par) 
+```
+
+
+```{r}
+res = drpfromts(left_df_5$LS_diff, left_df_5$LS_diff, windowsize = 100, radius = 0.15, delay = 1, embed = 2, rescale = 0,  normalize = 2, mindiagline = 2, minvertline = 2,            tw = 0, whiteline = FALSE, recpt = FALSE,                 side = 'both', method = 'crqa', metric = 'euclidean', datatype = 'continuous')
+
+# Save out profile for plotting
+profile = res$profile
+
+``` 
+```{r}
+plot(-59:59, profile, type = "l", lwd = 2, xlab = "Lag", ylab = "")
+```
